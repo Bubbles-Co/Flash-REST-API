@@ -10,7 +10,8 @@ import {
 import { createUserRecord, fetchUsersAttributes } from "./src/db/index.mjs";
 import {
   routeValidationMiddleware,
-  wardenMiddleware
+  wardenMiddleware,
+  errorHandler
 } from "./src/middlewares/index.mjs";
 import { appendFile } from "fs";
 
@@ -59,13 +60,13 @@ app.post(
       const { id, password: hashedPassword } = userAttributes[0];
       const isPasswordVerified = await verifyPassword(password, hashedPassword);
       if (!isPasswordVerified) {
-        throw new error("Password and username don't match");
+        throw "Password and username don't match";
       }
       const token = fetchJWTToken(id);
       res.cookie("token", token, {
         maxAge: 900000,
         httpOnly: true,
-        secure: false
+        secure: true
       });
       return res.sendStatus(200);
     } catch (err) {
@@ -83,5 +84,7 @@ app.post("/sign-out", function(req, res) {
 app.get("/users/sessions", wardenMiddleware, function(req, res) {
   return res.sendStatus(200);
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Flash API listening at ${PORT}!`));
