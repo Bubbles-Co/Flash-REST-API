@@ -168,9 +168,10 @@ exports.seed = async function(knex, Promise) {
   ]);
 
   // Table : routeCombinations
-  const routeTypeIds = await knex("routeTypes").select("id");
-  const gradeIds = await knex("grades").select("id");
-  const finishIds = await knex("finishes").select("id");
+  let routeTypeIds = await knex("routeTypes").select("id");
+  let gradeIds = await knex("grades").select("id");
+  let finishIds = await knex("finishes").select("id");
+
   const routeCombinations = generateRouteCombinations(
     routeTypeIds,
     gradeIds,

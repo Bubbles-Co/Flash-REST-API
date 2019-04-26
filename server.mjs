@@ -1,19 +1,19 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import * as R from "ramda";
 
 import {
   hashPassword,
   fetchJWTToken,
   verifyPassword
 } from "./src/auth/index.mjs";
-import { createUserRecord, fetchUsersAttributes } from "./src/db/index.mjs";
+import { createUserRecord, fetchAttributes } from "./src/db/index.mjs";
 import {
   routeValidationMiddleware,
-  wardenMiddleware,
   errorHandler
 } from "./src/middlewares/index.mjs";
-import { appendFile } from "fs";
+import user from "./src/user";
 
 const app = express();
 const PORT = 3000;
@@ -35,13 +35,12 @@ app.post(
       const token = fetchJWTToken(response[0]);
       res.cookie("token", token, {
         maxAge: 900000,
-        httpOnly: true,
-        secure: true
+        httpOnly: false,
+        secure: false
       });
       return res.sendStatus(200);
     } catch (err) {
-      console.log(err);
-      return res.sendStatus(500);
+      next(err);
     }
   }
 );
@@ -49,29 +48,31 @@ app.post(
 app.post(
   "/sign-in",
   routeValidationMiddleware(["username", "password"]),
-  async function(req, res) {
+  async function(req, res, next) {
     try {
       const { username, password } = req.body;
-      const userAttributes = await fetchUsersAttributes(
+      const userAttributes = await fetchAttributes(
         "users",
         { email: username },
         ["id", "password"]
       );
+      if (R.isEmpty(userAttributes)) {
+        next("unauthorized");
+      }
       const { id, password: hashedPassword } = userAttributes[0];
       const isPasswordVerified = await verifyPassword(password, hashedPassword);
       if (!isPasswordVerified) {
-        throw "Password and username don't match";
+        next("unauthorized");
       }
       const token = fetchJWTToken(id);
       res.cookie("token", token, {
         maxAge: 900000,
-        httpOnly: true,
-        secure: true
+        httpOnly: false,
+        secure: false
       });
       return res.sendStatus(200);
     } catch (err) {
-      console.log(err);
-      return res.sendStatus(500);
+      next(err);
     }
   }
 );
@@ -81,9 +82,7 @@ app.post("/sign-out", function(req, res) {
   return res.sendStatus(200);
 });
 
-app.get("/users/sessions", wardenMiddleware, function(req, res) {
-  return res.sendStatus(200);
-});
+app.use("/user", user);
 
 app.use(errorHandler);
 
