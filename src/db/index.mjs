@@ -26,8 +26,21 @@ export function fetchAttributes(
     .modify(queryBuilder => {
       if (!R.isEmpty(joinAttributes)) {
         joinAttributes.forEach(joinAttribute => {
-          queryBuilder.join(joinAttribute.tableName, joinAttribute.columns);
+          if (joinAttribute.joinType === "left") {
+            queryBuilder.leftJoin(
+              joinAttribute.tableName,
+              joinAttribute.columns
+            );
+          } else {
+            queryBuilder.join(joinAttribute.tableName, joinAttribute.columns);
+          }
         });
       }
     });
+}
+
+export function insertAttributes(tableName, data) {
+  return knexClient(tableName)
+    .insert(data)
+    .returning("id");
 }

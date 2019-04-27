@@ -27,14 +27,14 @@ app.use(cookieParser());
 app.post(
   "/sign-up",
   routeValidationMiddleware(["username", "password", "name"]),
-  async function(req, res) {
+  async function(req, res, next) {
     try {
       const { username, password, name } = req.body;
       const hashedPassword = await hashPassword(password, SALT_ROUNDS);
       const response = await createUserRecord(username, hashedPassword, name);
       const token = fetchJWTToken(response[0]);
       res.cookie("token", token, {
-        maxAge: 900000,
+        maxAge: 9000000000,
         httpOnly: false,
         secure: false
       });
@@ -66,7 +66,7 @@ app.post(
       }
       const token = fetchJWTToken(id);
       res.cookie("token", token, {
-        maxAge: 900000,
+        maxAge: 9000000000,
         httpOnly: false,
         secure: false
       });

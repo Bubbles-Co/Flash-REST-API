@@ -1,8 +1,8 @@
 import express from "express";
 import * as R from "ramda";
 
-import { wardenMiddleware } from "../middlewares";
-import { fetchAttributes } from "../db";
+import { wardenMiddleware, routeValidationMiddleware } from "../middlewares";
+import { fetchAttributes, insertAttributes } from "../db";
 
 const router = express.Router();
 
@@ -35,8 +35,9 @@ router.get("/me/sessions", wardenMiddleware, async function(req, res, next) {
           columns: { "users.id": "sessions.userId" }
         },
         {
-          tableName: "sessions",
-          columns: { "users.id": "sessions.userId" }
+          tableName: "sessionRoutes",
+          columns: { "sessions.id": "sessionRoutes.sessionId" },
+          joinType: "left"
         }
       ]
     );
@@ -48,5 +49,30 @@ router.get("/me/sessions", wardenMiddleware, async function(req, res, next) {
     next(err);
   }
 });
+
+router.post(
+  "/me/session",
+  wardenMiddleware,
+  routeValidationMiddleware(["gymId", "routeComboId"]),
+  async function(req, res, next) {
+    try {
+      const userId = res.locals.userId;
+
+      const { gymId, routeComboId } = req.body;
+
+      // TODO write logic to create Gym record if Gym Name is passed.
+
+      const id = await insertAttributes("sessions", {
+        userId,
+        gymId,
+        date: new Date()
+      });
+
+      return res.json({ id });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 export default router;

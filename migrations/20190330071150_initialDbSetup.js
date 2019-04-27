@@ -154,12 +154,12 @@ exports.up = async function(knex, Promise) {
         .uuid("id")
         .primary()
         .defaultTo(knex.raw("uuid_generate_v4()"));
-      table.uuid("sessionID").notNullable();
+      table.uuid("sessionId").notNullable();
       table.uuid("routeComboId").notNullable();
       table.timestamps(true, true);
 
       table
-        .foreign("sessionID")
+        .foreign("sessionId")
         .references("id")
         .inTable("routeTypes");
       table
@@ -176,12 +176,12 @@ exports.up = async function(knex, Promise) {
         .uuid("id")
         .primary()
         .defaultTo(knex.raw("uuid_generate_v4()"));
-      table.uuid("sessionID").notNullable();
+      table.uuid("sessionId").notNullable();
       table.uuid("tagId").notNullable();
       table.timestamps(true, true);
 
       table
-        .foreign("sessionID")
+        .foreign("sessionId")
         .references("id")
         .inTable("sessions");
       table
@@ -189,7 +189,7 @@ exports.up = async function(knex, Promise) {
         .references("id")
         .inTable("tags");
 
-      table.unique(["sessionID", "tagId"]);
+      table.unique(["sessionId", "tagId"]);
     });
   }
 

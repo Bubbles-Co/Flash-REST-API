@@ -35,5 +35,8 @@ export function errorHandler(err, req, res, next) {
   if (err == "unauthorized") {
     return res.sendStatus(401);
   }
+  if (err == "Invalid parameters.") {
+    return res.sendStatus(400);
+  }
   return res.sendStatus(500);
 }
