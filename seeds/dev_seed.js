@@ -53,7 +53,7 @@ let ropeGrades = [
 
 let routeTypes = ["boulder", "top-rope", "sport", "trad", "ice", "mixed"];
 
-function generateRouteCombinations(routeTypeIds, gradeIds, finishIds) {
+const generateRouteCombinations = (routeTypeIds, gradeIds, finishIds) => {
   routeTypeIds = routeTypeIds.map(({ id }) => id);
   gradeIds = gradeIds.map(({ id }) => id);
   finishIds = finishIds.map(({ id }) => id);
@@ -71,9 +71,9 @@ function generateRouteCombinations(routeTypeIds, gradeIds, finishIds) {
     }
   }
   return result;
-}
+};
 
-exports.seed = async function(knex, Promise) {
+exports.seed = async (knex, Promise) => {
   // Table : routeTypes
   await knex("routeCombinations").del();
   await knex("routeTypeGrades").del();

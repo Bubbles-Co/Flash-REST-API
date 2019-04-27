@@ -1,15 +1,15 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export async function hashPassword(plainTextPassword, saltRounds) {
+export const hashPassword = async (plainTextPassword, saltRounds) => {
   return bcrypt.hash(plainTextPassword, saltRounds);
-}
+};
 
-export async function verifyPassword(plainTextPassword, hashedPassword) {
+export const verifyPassword = async (plainTextPassword, hashedPassword) => {
   return bcrypt.compare(plainTextPassword, hashedPassword);
-}
+};
 
-export function fetchJWTToken(userId) {
+export const fetchJWTToken = userId => {
   const payload = {
     userId
   };
@@ -20,26 +20,26 @@ export function fetchJWTToken(userId) {
     jwtSignOptions
   );
   return token;
-}
+};
 
-export function verifyJWTToken(token) {
+export const verifyJWTToken = token => {
   const options = fetchJWTVerifyOptions();
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_SECRET, options);
   return decoded;
-}
+};
 
-function fetchJWTSignOptions(clientId = "https://sidbox.info") {
+const fetchJWTSignOptions = (clientId = "https://sidbox.info") => {
   return {
     expiresIn: "12h",
     algorithm: "HS256",
     audience: clientId
   };
-}
+};
 
-function fetchJWTVerifyOptions(clientId = "https://sidbox.info") {
+const fetchJWTVerifyOptions = (clientId = "https://sidbox.info") => {
   return {
     expiresIn: "12h",
     algorithm: ["HS256"],
     audience: clientId
   };
-}
+};

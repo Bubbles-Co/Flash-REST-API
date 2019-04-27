@@ -161,7 +161,7 @@ exports.up = async function(knex, Promise) {
       table
         .foreign("sessionId")
         .references("id")
-        .inTable("routeTypes");
+        .inTable("sessions");
       table
         .foreign("routeComboId")
         .references("id")

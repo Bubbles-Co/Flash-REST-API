@@ -2,18 +2,18 @@ import * as R from "ramda";
 
 import { verifyJWTToken } from "../auth";
 
-export function routeValidationMiddleware(paramsToValidate) {
-  return function(req, res, next) {
-    paramsToValidate.forEach(function(val) {
+export const routeValidationMiddleware = paramsToValidate => {
+  return (req, res, next) => {
+    paramsToValidate.forEach(val => {
       if (!R.has(val)(req.body)) {
         return next("Invalid parameters.");
       }
     });
     return next();
   };
-}
+};
 
-export function wardenMiddleware(req, res, next) {
+export const wardenMiddleware = (req, res, next) => {
   try {
     if (!req.cookies.token) {
       return next("unauthorized");
@@ -28,9 +28,9 @@ export function wardenMiddleware(req, res, next) {
   } catch (err) {
     return next(err);
   }
-}
+};
 
-export function errorHandler(err, req, res, next) {
+export const errorHandler = (err, req, res, next) => {
   console.log(err);
   if (err == "unauthorized") {
     return res.sendStatus(401);
@@ -39,4 +39,4 @@ export function errorHandler(err, req, res, next) {
     return res.sendStatus(400);
   }
   return res.sendStatus(500);
-}
+};

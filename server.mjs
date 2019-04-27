@@ -14,6 +14,7 @@ import {
   errorHandler
 } from "./src/middlewares/index.mjs";
 import user from "./src/user";
+import gym from "./src/gym/index.mjs";
 
 const app = express();
 const PORT = 3000;
@@ -27,7 +28,7 @@ app.use(cookieParser());
 app.post(
   "/sign-up",
   routeValidationMiddleware(["username", "password", "name"]),
-  async function(req, res, next) {
+  async (req, res, next) => {
     try {
       const { username, password, name } = req.body;
       const hashedPassword = await hashPassword(password, SALT_ROUNDS);
@@ -48,7 +49,7 @@ app.post(
 app.post(
   "/sign-in",
   routeValidationMiddleware(["username", "password"]),
-  async function(req, res, next) {
+  async (req, res, next) => {
     try {
       const { username, password } = req.body;
       const userAttributes = await fetchAttributes(
@@ -65,6 +66,8 @@ app.post(
         next("unauthorized");
       }
       const token = fetchJWTToken(id);
+
+      console.log(token);
       res.cookie("token", token, {
         maxAge: 9000000000,
         httpOnly: false,
@@ -77,12 +80,14 @@ app.post(
   }
 );
 
-app.post("/sign-out", function(req, res) {
+app.post("/sign-out", (req, res) => {
   res.clearCookie("token");
   return res.sendStatus(200);
 });
 
 app.use("/user", user);
+
+app.use("/gym", gym);
 
 app.use(errorHandler);
 

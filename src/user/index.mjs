@@ -6,7 +6,9 @@ import { fetchAttributes, insertAttributes } from "../db";
 
 const router = express.Router();
 
-router.get("/me", wardenMiddleware, async function(req, res, next) {
+// TODO fix validation middleware.
+
+router.get("/me", wardenMiddleware, async (req, res, next) => {
   try {
     const userId = res.locals.userId;
     let user = await fetchAttributes("users", { id: userId }, [
@@ -22,7 +24,7 @@ router.get("/me", wardenMiddleware, async function(req, res, next) {
   }
 });
 
-router.get("/me/sessions", wardenMiddleware, async function(req, res, next) {
+router.get("/me/sessions", wardenMiddleware, async (req, res, next) => {
   try {
     const userId = res.locals.userId;
     let user = await fetchAttributes(
@@ -50,25 +52,45 @@ router.get("/me/sessions", wardenMiddleware, async function(req, res, next) {
   }
 });
 
+// router.post("/me/session/:id", (req, res, next) => {
+//   console.log(req.params.id);
+//   res.sendStatus(200);
+// });
+
+// router.get("/me/session/:id", (req, res, next) => {
+//   console.log(req.params.id);
+//   res.sendStatus(200);
+// });
+
 router.post(
   "/me/session",
   wardenMiddleware,
-  routeValidationMiddleware(["gymId", "routeComboId"]),
-  async function(req, res, next) {
+  routeValidationMiddleware(["gymId", "routeComboIds"]),
+  async (req, res, next) => {
     try {
       const userId = res.locals.userId;
 
-      const { gymId, routeComboId } = req.body;
+      const { gymId, routeComboIds } = req.body;
 
-      // TODO write logic to create Gym record if Gym Name is passed.
-
-      const id = await insertAttributes("sessions", {
+      const sessionId = await insertAttributes("sessions", {
         userId,
         gymId,
         date: new Date()
       });
 
-      return res.json({ id });
+      const sessionRoutes = routeComboIds.map(routeComboId => ({
+        routeComboId,
+        sessionId: sessionId[0]
+      }));
+
+      console.log(sessionRoutes);
+
+      const sessionRoutesId = await insertAttributes(
+        "sessionRoutes",
+        sessionRoutes
+      );
+
+      return res.json({ sessionId, sessionRoutesId });
     } catch (err) {
       next(err);
     }

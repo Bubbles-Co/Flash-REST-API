@@ -4,7 +4,9 @@ import * as R from "ramda";
 
 const knexClient = knex(knexConfig);
 
-export function createUserRecord(username, hashedPassword, name) {
+// TODO refactor crateUserRecord
+
+export const createUserRecord = (username, hashedPassword, name) => {
   return knexClient("users")
     .insert({
       email: username,
@@ -12,14 +14,14 @@ export function createUserRecord(username, hashedPassword, name) {
       name
     })
     .returning("id");
-}
+};
 
-export function fetchAttributes(
+export const fetchAttributes = (
   tableName,
   wherePredicates,
   selectAttributes,
   joinAttributes = []
-) {
+) => {
   return knexClient(tableName)
     .where(wherePredicates)
     .select(selectAttributes)
@@ -37,10 +39,10 @@ export function fetchAttributes(
         });
       }
     });
-}
+};
 
-export function insertAttributes(tableName, data) {
+export const insertAttributes = (tableName, data) => {
   return knexClient(tableName)
     .insert(data)
     .returning("id");
-}
+};
