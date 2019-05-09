@@ -22,6 +22,11 @@ const SALT_ROUNDS = 10;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 // Maybe use express routers when needed.
 
@@ -39,7 +44,8 @@ app.post(
         httpOnly: false,
         secure: false
       });
-      return res.sendStatus(200);
+      const userObj = {"id": response[0]};
+      return res.status(200).json(userObj);
     } catch (err) {
       next(err);
     }
@@ -51,6 +57,8 @@ app.post(
   routeValidationMiddleware(["username", "password"]),
   async (req, res, next) => {
     try {
+      console.log("req", req);
+      console.log(res);
       const { username, password } = req.body;
       const userAttributes = await fetchAttributes(
         "users",
@@ -67,14 +75,14 @@ app.post(
       }
       const token = fetchJWTToken(id);
 
-      console.log(token);
       res.cookie("token", token, {
         maxAge: 9000000000,
         httpOnly: false,
         secure: false
       });
-      return res.sendStatus(200);
+      return res.status(200).json({"id": id});
     } catch (err) {
+      console.log(err)
       next(err);
     }
   }

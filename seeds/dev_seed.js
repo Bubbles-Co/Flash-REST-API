@@ -51,8 +51,6 @@ let ropeGrades = [
   "5.15d"
 ];
 
-let routeTypes = ["boulder", "top-rope", "sport", "trad", "ice", "mixed"];
-
 const generateRouteCombinations = (routeTypeIds, gradeIds, finishIds) => {
   routeTypeIds = routeTypeIds.map(({ id }) => id);
   gradeIds = gradeIds.map(({ id }) => id);
