@@ -75,6 +75,7 @@ const generateRouteCombinations = (routeTypeIds, gradeIds, finishIds) => {
 
 exports.seed = async (knex, Promise) => {
   // Table : routeTypes
+  await knex("sessionRoutes").del();
   await knex("routeCombinations").del();
   await knex("routeTypeGrades").del();
   await knex("grades").del();
