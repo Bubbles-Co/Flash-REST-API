@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import * as R from "ramda";
+import cors from "cors";
 
 import {
   hashPassword,
@@ -22,11 +23,7 @@ const SALT_ROUNDS = 10;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(cors());
 
 // Maybe use express routers when needed.
 
@@ -44,7 +41,6 @@ app.post(
         httpOnly: false,
         secure: false
       });
-      const userObj = {"id": response[0]};
       return res.sendStatus(200);
     } catch (err) {
       next(err);
@@ -80,7 +76,7 @@ app.post(
       });
       return res.sendStatus(200);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       next(err);
     }
   }
