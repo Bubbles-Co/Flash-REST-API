@@ -45,7 +45,7 @@ app.post(
         secure: false
       });
       const userObj = {"id": response[0]};
-      return res.status(200).json(userObj);
+      return res.sendStatus(200);
     } catch (err) {
       next(err);
     }
@@ -57,8 +57,6 @@ app.post(
   routeValidationMiddleware(["username", "password"]),
   async (req, res, next) => {
     try {
-      console.log("req", req);
-      console.log(res);
       const { username, password } = req.body;
       const userAttributes = await fetchAttributes(
         "users",
@@ -80,7 +78,7 @@ app.post(
         httpOnly: false,
         secure: false
       });
-      return res.status(200).json({"id": id});
+      return res.sendStatus(200);
     } catch (err) {
       console.log(err)
       next(err);
