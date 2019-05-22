@@ -41,6 +41,12 @@ export const fetchAttributes = (
     });
 };
 
+export const fetchColumns = (tableName, selectAttributes) => {
+  return knexClient
+    .select(selectAttributes)
+    .from(tableName);
+};
+
 export const insertAttributes = (tableName, data) => {
   return knexClient(tableName)
     .insert(data)

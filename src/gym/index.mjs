@@ -2,7 +2,7 @@ import express from "express";
 import * as R from "ramda";
 
 import { wardenMiddleware, routeValidationMiddleware } from "../middlewares";
-import { fetchAttributes, insertAttributes } from "../db";
+import { fetchAttributes, insertAttributes, fetchColumns } from "../db";
 
 const router = express.Router();
 
@@ -36,5 +36,18 @@ router.use(
     }
   }
 );
+
+router.use("/gyms", wardenMiddleware, async (req, res, next) => {
+  try {
+    let gyms = await fetchColumns(
+      "gyms",
+      ("id", "value")
+    )
+
+    return res.json(gyms)
+  } catch (err) {
+    next(err);
+  }
+})
 
 export default router;
