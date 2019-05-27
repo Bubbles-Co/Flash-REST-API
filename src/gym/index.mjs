@@ -19,10 +19,8 @@ router.use(
       let id;
       id = await fetchAttributes(
         "gyms",
-        {
-          value: gymName
-        },
-        ["id"]
+        ["id"],
+        { value: gymName },
       );
       if (R.isEmpty(id)) {
         id = await insertAttributes("gyms", {
@@ -36,5 +34,17 @@ router.use(
     }
   }
 );
+
+router.get(
+  "/",
+  async (req, res, next) => {
+    try {
+      let vals = await fetchAttributes("gyms", ["id", "value"]);
+      return res.json(vals);
+    } catch (err) {
+      next(err);
+    }
+  }
+)
 
 export default router;
