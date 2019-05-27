@@ -18,12 +18,11 @@ export const createUserRecord = (username, hashedPassword, name) => {
 
 export const fetchAttributes = (
   tableName,
-  wherePredicates,
   selectAttributes,
+  wherePredicates = [],
   joinAttributes = []
 ) => {
   return knexClient(tableName)
-    .where(wherePredicates)
     .select(selectAttributes)
     .modify(queryBuilder => {
       if (!R.isEmpty(joinAttributes)) {
@@ -37,6 +36,9 @@ export const fetchAttributes = (
             queryBuilder.join(joinAttribute.tableName, joinAttribute.columns);
           }
         });
+      }
+      if (!R.isEmpty(wherePredicates)) {
+        queryBuilder.where(wherePredicates);
       }
     });
 };

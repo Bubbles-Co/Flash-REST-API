@@ -11,10 +11,11 @@ const router = express.Router();
 router.get("/me", wardenMiddleware, async (req, res, next) => {
   try {
     const userId = res.locals.userId;
-    let user = await fetchAttributes("users", { id: userId }, [
-      "name",
-      "email"
-    ]);
+    let user = await fetchAttributes(
+      "users",
+      ["name", "email"],
+      { id: userId }
+    );
     if (!R.isEmpty(user)) {
       user = user[0];
     }
@@ -29,8 +30,8 @@ router.get("/me/sessions", wardenMiddleware, async (req, res, next) => {
     const userId = res.locals.userId;
     let user = await fetchAttributes(
       "users",
-      { "users.id": userId },
       ["users.id"],
+      { "users.id": userId },
       [
         {
           tableName: "sessions",

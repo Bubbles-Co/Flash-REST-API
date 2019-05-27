@@ -15,7 +15,9 @@ import {
   errorHandler
 } from "./src/middlewares/index.mjs";
 import user from "./src/user";
-import gym from "./src/gym/index.mjs";
+import gym from "./src/gym";
+import finishes from "./src/finishes";
+import grades from "./src/grades";
 
 const app = express();
 const PORT = 3000;
@@ -56,8 +58,8 @@ app.post(
       const { username, password } = req.body;
       const userAttributes = await fetchAttributes(
         "users",
+        ["id", "password"],
         { email: username },
-        ["id", "password"]
       );
       if (R.isEmpty(userAttributes)) {
         next("unauthorized");
@@ -90,6 +92,10 @@ app.post("/sign-out", (req, res) => {
 app.use("/user", user);
 
 app.use("/gym", gym);
+
+app.use("/finishes", finishes);
+
+app.use("/grades", grades);
 
 app.use(errorHandler);
 
