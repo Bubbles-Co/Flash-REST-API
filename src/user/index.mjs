@@ -65,7 +65,7 @@ router.get("/me/sessions", wardenMiddleware, async (req, res, next) => {
 router.post(
   "/me/session",
   wardenMiddleware,
-  routeValidationMiddleware(["gymId", "routeComboIds"]),
+  routeValidationMiddleware.bind(null, ["gymId", "routeComboIds"]),
   async (req, res, next) => {
     try {
       const userId = res.locals.userId;
@@ -96,5 +96,14 @@ router.post(
     }
   }
 );
+
+router.get("/me/session_stats", wardenMiddleware, async (req, res, next) => {
+  const { startDate, endDate } = req.query;
+  const result = fetchSessionStats(startDate, endDate);
+});
+router.get("/me/sessions_count", wardenMiddleware, async (req, res, next) => {
+  const { startDate, endDate } = req.query;
+  const result = fetchSessionsCount(startDate, endDate);
+});
 
 export default router;

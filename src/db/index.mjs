@@ -46,3 +46,10 @@ export const insertAttributes = (tableName, data) => {
     .insert(data)
     .returning("id");
 };
+
+export const fetchSessionStats = (startDate, endDate, userId) => {
+  return knexClient.raw(``);
+};
+export const fetchSessionsCount = (startDate, endDate, userId) => {
+  return knexClient.raw(``);
+};

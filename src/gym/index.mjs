@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(
   "/",
   wardenMiddleware,
-  routeValidationMiddleware(["gymName"]),
+  routeValidationMiddleware.bind(null, ["gymName"]),
   async (req, res, next) => {
     try {
       const { gymName } = req.body;

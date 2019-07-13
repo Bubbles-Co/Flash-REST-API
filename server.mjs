@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import * as R from "ramda";
+import cors from "cors";
 
 import {
   hashPassword,
@@ -17,8 +18,15 @@ import user from "./src/user";
 import gym from "./src/gym/index.mjs";
 
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 const SALT_ROUNDS = 10;
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true
+  })
+);
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -27,19 +35,19 @@ app.use(cookieParser());
 
 app.post(
   "/sign-up",
-  routeValidationMiddleware(["username", "password", "name"]),
+  routeValidationMiddleware.bind(null, ["username", "password", "name"]),
   async (req, res, next) => {
     try {
       const { username, password, name } = req.body;
       const hashedPassword = await hashPassword(password, SALT_ROUNDS);
       const response = await createUserRecord(username, hashedPassword, name);
-      const token = fetchJWTToken(response[0]);
-      res.cookie("token", token, {
+      const jwtToken = fetchJWTToken(response[0]);
+      res.json({
+        token: jwtToken,
         maxAge: 9000000000,
         httpOnly: false,
         secure: false
       });
-      return res.sendStatus(200);
     } catch (err) {
       next(err);
     }
@@ -48,15 +56,14 @@ app.post(
 
 app.post(
   "/sign-in",
-  routeValidationMiddleware(["username", "password"]),
+  routeValidationMiddleware.bind(null, ["email", "password"]),
   async (req, res, next) => {
     try {
-      const { username, password } = req.body;
-      const userAttributes = await fetchAttributes(
-        "users",
-        { email: username },
-        ["id", "password"]
-      );
+      const { email, password } = req.body;
+      const userAttributes = await fetchAttributes("users", { email }, [
+        "id",
+        "password"
+      ]);
       if (R.isEmpty(userAttributes)) {
         next("unauthorized");
       }
@@ -65,23 +72,23 @@ app.post(
       if (!isPasswordVerified) {
         next("unauthorized");
       }
-      const token = fetchJWTToken(id);
+      const jwtToken = fetchJWTToken(id);
 
-      console.log(token);
-      res.cookie("token", token, {
+      res.json({
+        token: jwtToken,
         maxAge: 9000000000,
         httpOnly: false,
         secure: false
       });
-      return res.sendStatus(200);
     } catch (err) {
+      console.log(err);
       next(err);
     }
   }
 );
 
 app.post("/sign-out", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("jwtToken");
   return res.sendStatus(200);
 });
 
