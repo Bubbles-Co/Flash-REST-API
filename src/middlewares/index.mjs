@@ -29,6 +29,7 @@ export const wardenMiddleware = (req, res, next) => {
 };
 
 export const errorHandler = (err, req, res, next) => {
+  console.log(err);
   if (err == "unauthorized") {
     res.cookie("jwtToken", "", {
       maxAge: 0,

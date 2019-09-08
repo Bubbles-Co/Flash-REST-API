@@ -2,7 +2,13 @@ import express from "express";
 import * as R from "ramda";
 
 import { wardenMiddleware, routeValidationMiddleware } from "../middlewares";
-import { fetchAttributes, insertAttributes } from "../db";
+import {
+  fetchAttributes,
+  insertAttributes,
+  fetchSessionStats,
+  fetchSessionsCount,
+  fetchDateSessions
+} from "../db";
 
 const router = express.Router();
 
@@ -98,12 +104,36 @@ router.post(
 );
 
 router.get("/me/session_stats", wardenMiddleware, async (req, res, next) => {
-  const { startDate, endDate } = req.query;
-  const result = fetchSessionStats(startDate, endDate);
+  try {
+    const { userId } = res.locals;
+    const { startDate, endDate } = req.query;
+    const result = await fetchSessionStats(startDate, endDate, userId);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
 });
+
 router.get("/me/sessions_count", wardenMiddleware, async (req, res, next) => {
-  const { startDate, endDate } = req.query;
-  const result = fetchSessionsCount(startDate, endDate);
+  try {
+    const { userId } = res.locals;
+    const { startDate, endDate } = req.query;
+    const result = await fetchSessionsCount(startDate, endDate, userId);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/me/sessions/dates", wardenMiddleware, async (req, res, next) => {
+  try {
+    const { userId } = res.locals;
+    const { startDate, endDate } = req.query;
+    const result = await fetchDateSessions(startDate, endDate, userId);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

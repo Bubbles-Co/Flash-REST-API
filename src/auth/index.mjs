@@ -30,7 +30,7 @@ export const verifyJWTToken = token => {
 
 const fetchJWTSignOptions = (clientId = "https://sidbox.info") => {
   return {
-    expiresIn: "12h",
+    expiresIn: "9000000000s",
     algorithm: "HS256",
     audience: clientId
   };
